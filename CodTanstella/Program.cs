@@ -17,7 +17,7 @@ namespace Graph
                 d = Convert.ToInt32(objOfLine[0]);//кратность кода
                 k = Convert.ToInt32(objOfLine[1]);//количество слов
                 n = Convert.ToInt32(objOfLine[2]);//длина слова
-                                                  //первичное заполнение массива степеней вершин
+                 //первичное заполнение массива вероятностей
                 arrOfElements = new decimal[k];
                 line = streamReader.ReadLine();
                 objOfLine = line.Split(' ');
@@ -26,10 +26,10 @@ namespace Graph
                     arrOfElements[i] = Convert.ToDecimal(objOfLine[i].Replace('.', ','));
                 }
             }
+            //массив хранения множества вершин
             List<Element> massiv = new List<Element>();
-            massiv.Add(new Element(1, 0));
-            int topCounter = k;
-            Console.WriteLine("1");
+            massiv.Add(new Element(1, 0));//заполняем первичным значением
+            int topCounter = k;//ожидаемое количество вершин при следующем расщеплении
             while (topCounter <= Math.Pow(d, n))
             {
                 List<Element> temp = new List<Element>();
@@ -44,38 +44,33 @@ namespace Graph
                         {
                             //заполняем временный массив результатом расщепления
                             temp.Add(new Element(dec.Key * arrOfElements[i], dec.Value+1));
-                            Console.Write(" " + dec.Key * arrOfElements[i]+"-"+dec.Value);
                         }
-                        max = 0;
+                        max = 0;//скидываем максимальное, что бы не дублировать расщепление для вершины с равным значением вероятности
                     }
                     else
                     {
-                        temp.Add(new Element(dec.Key, dec.Value));
-                        Console.Write(" " + dec.Key+ "-" + dec.Value);
+                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
                     }
                 }
                 topCounter += k-1;
-                massiv.Clear();
+                massiv.Clear();//очищаем и переписываем всё в основной массив
                 foreach (Element dec in temp) massiv.Add(new Element(dec.Key, dec.Value));
                 Console.WriteLine();
             }
+            //Расчет средней длины сообщения
             decimal result = 0;
-            decimal summ = 0;
             foreach (Element dec in massiv)
             {
                 result += dec.Key * dec.Value;
-                summ += dec.Key;
             }
-            Console.WriteLine("result=" + result + " summ=" + summ);
-            Console.ReadKey();
-
-            //Расчет средней длины сообщения
             ////вывод в файл
+            result = Math.Round(result, 3);
             using (StreamWriter streamWriter = new StreamWriter("Tanstall.out", false))
                 streamWriter.Write(result);
+
         }
     }
-    class Element 
+    class Element //хранение пары значений: вероятность и длина
     {
         public decimal Key { get; set; }
         public int Value { get; set; }
