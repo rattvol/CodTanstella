@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace Graph
@@ -9,8 +10,9 @@ namespace Graph
         static void Main(string[] args)
         {
             decimal[] arrOfElements;
-            int d, k, n;
-            using (StreamReader streamReader = new StreamReader("Tanstall.in"))
+            int d, k, n;  
+            Char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
+            using (StreamReader streamReader = new StreamReader("Tunstall.in"))
             {
                 string line = streamReader.ReadLine();
                 string[] objOfLine = line.Split(' ');
@@ -23,7 +25,7 @@ namespace Graph
                 objOfLine = line.Split(' ');
                 for (int i = 0; i < k; i++)//заполняем массив вероятностей
                 {
-                    arrOfElements[i] = Convert.ToDecimal(objOfLine[i].Replace('.', ','));
+                    arrOfElements[i] = Convert.ToDecimal(objOfLine[i].Replace('.', separator));
                 }
             }
             //массив хранения множества вершин
@@ -64,9 +66,9 @@ namespace Graph
                 result += dec.Key * dec.Value;
             }
             ////вывод в файл
-            result = Math.Round(result, 3);
-            using (StreamWriter streamWriter = new StreamWriter("Tanstall.out", false))
-                streamWriter.Write(result);
+            string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
+            using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
+                streamWriter.Write(resultString);
 
         }
     }
