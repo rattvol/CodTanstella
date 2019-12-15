@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -34,8 +35,9 @@ namespace Graph
             int topCounter = k;//ожидаемое количество вершин при следующем расщеплении
             int limit = Convert.ToInt32(Math.Pow(d, n));//ограничение по количеству вершин
             decimal max = 1;//максимальное для поиска
-            decimal newmax = 0;//максимальное для заполнения
+            decimal newmax = 0;
             decimal newProb;
+
             while (topCounter <= limit)
             {
                 List<Element> temp = new List<Element>(topCounter);
@@ -54,7 +56,7 @@ namespace Graph
                     }
                     else
                     {
-                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
+                        temp.Add(dec);//остальное просто переписываем
                         if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
                     }
                 }
