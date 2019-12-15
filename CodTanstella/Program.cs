@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -40,7 +39,7 @@ namespace Graph
 
             while (topCounter <= limit)
             {
-                List<Element> temp = new List<Element>(topCounter);
+                List<Element> temp = new List<Element>();
                 foreach (Element dec in massiv)
                 {
                     if (dec.Key == max & topCounter <= limit)//расщепление для максимального значения
@@ -49,18 +48,25 @@ namespace Graph
                         {
                             //заполняем временный массив результатом расщепления
                             newProb = dec.Key * arrOfElements[i];
-                            temp.Add(new Element(newProb, dec.Value + 1));
+                            if (i < k - 1) temp.Add(new Element(newProb, dec.Value + 1));
+                            else//заменяем значение расщепляемой вершины в основном массиве
+                            {
+                                dec.Key = newProb;
+                                dec.Value += +1;
+                            }
                             if (newProb > newmax) newmax = newProb;//вычисляем максимальное
                         }
                         topCounter += k - 1;
                     }
                     else
                     {
-                        temp.Add(dec);//остальное просто переписываем
-                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
+                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное среди неизменяемых элементов
                     }
                 }
-                massiv = temp;
+                foreach (Element dec in temp)
+                {
+                    massiv.Add(dec);//дополняем массив новыми элементами
+                }
                 max = newmax;
                 newmax = 0;
             }
