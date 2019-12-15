@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,8 +9,6 @@ namespace Graph
     {
         static void Main(string[] args)
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
             decimal[] arrOfElements;
             int d, k, n;
             Char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
@@ -75,10 +72,6 @@ namespace Graph
             string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
             using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
                 streamWriter.Write(resultString);
-
-            stopWatch.Stop();
-            Console.WriteLine(stopWatch.ElapsedMilliseconds.ToString());
-            Console.ReadKey();
         }
     }
     class Element //хранение пары значений: вероятность и длина
