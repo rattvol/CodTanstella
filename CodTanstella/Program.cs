@@ -10,8 +10,8 @@ namespace Graph
     {
         static void Main(string[] args)
         {
-            float[] arrOfElements;
-            int d, k, n;  
+            decimal[] arrOfElements;
+            int d, k, n;
             Char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
             using (StreamReader streamReader = new StreamReader("Tunstall.in"))
             {
@@ -20,13 +20,13 @@ namespace Graph
                 d = Convert.ToInt32(objOfLine[0]);//кратность кода
                 k = Convert.ToInt32(objOfLine[1]);//количество слов
                 n = Convert.ToInt32(objOfLine[2]);//длина слова
-                 //чтение и заполнение массива вероятностей
-                arrOfElements = new float[k];
+                                                  //чтение и заполнение массива вероятностей
+                arrOfElements = new decimal[k];
                 line = streamReader.ReadLine();
                 objOfLine = line.Split(' ');
                 for (int i = 0; i < k; i++)//заполняем массив вероятностей
                 {
-                    arrOfElements[i] = float.Parse(objOfLine[i].Replace('.', separator));
+                    arrOfElements[i] = decimal.Parse(objOfLine[i].Replace('.', separator));
                 }
             }
             //массив хранения множества вершин
@@ -34,30 +34,29 @@ namespace Graph
             massiv.Add(new Element(1, 0));//заполняем первичным значением
             int topCounter = k;//ожидаемое количество вершин при следующем расщеплении
             int limit = Convert.ToInt32(Math.Pow(d, n));//ограничение по количеству вершин
-            float max = 1;//максимальное для поиска
-            float newmax = 0;//максимальное для заполнения
-            float newProb;
+            decimal max = 1;//максимальное для поиска
+            decimal newmax = 0;//максимальное для заполнения
+            decimal newProb;
             while (topCounter <= limit)
             {
                 List<Element> temp = new List<Element>(topCounter);
                 foreach (Element dec in massiv)
                 {
-                    if (dec.Key == max)//расщепление для максимального значения
+                    if (dec.Key < max)//расщепление для максимального значения
+                    {
+                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
+                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
+                    }
+                    else
                     {
                         for (int i = 0; i < k; i++)
                         {
                             //заполняем временный массив результатом расщепления
                             newProb = dec.Key * arrOfElements[i];
-                            temp.Add(new Element(newProb, dec.Value+1));
+                            temp.Add(new Element(newProb, dec.Value + 1));
                             if (newProb > newmax) newmax = newProb;//вычисляем максимальное
                         }
                         topCounter += k - 1;
-                    }
-                    else
-                    {
-                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
-                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
-
                     }
                 }
                 massiv = temp;
@@ -65,7 +64,7 @@ namespace Graph
                 newmax = 0;
             }
             //Расчет средней длины сообщения
-            float result = 0;
+            decimal result = 0;
             foreach (Element dec in massiv)
             {
                 result += dec.Key * dec.Value;
@@ -73,14 +72,14 @@ namespace Graph
             ////вывод в файл
             string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
             using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
-            streamWriter.Write(resultString);
+                streamWriter.Write(resultString);
         }
     }
     class Element //хранение пары значений: вероятность и длина
     {
-        public float Key { get; set; }//вероятность
+        public decimal Key { get; set; }//вероятность
         public int Value { get; set; }//длина сообщения
-        public Element(float key, int value)
+        public Element(decimal key, int value)
         {
             Key = key;
             Value = value;
