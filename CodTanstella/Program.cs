@@ -10,6 +10,8 @@ namespace Graph
     {
         static void Main(string[] args)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
             decimal[] arrOfElements;
             int d, k, n;
             Char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
@@ -42,12 +44,7 @@ namespace Graph
                 List<Element> temp = new List<Element>(topCounter);
                 foreach (Element dec in massiv)
                 {
-                    if (dec.Key < max)//расщепление для максимального значения
-                    {
-                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
-                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
-                    }
-                    else
+                    if (dec.Key == max & topCounter <= limit)//расщепление для максимального значения
                     {
                         for (int i = 0; i < k; i++)
                         {
@@ -57,6 +54,11 @@ namespace Graph
                             if (newProb > newmax) newmax = newProb;//вычисляем максимальное
                         }
                         topCounter += k - 1;
+                    }
+                    else
+                    {
+                        temp.Add(new Element(dec.Key, dec.Value));//остальное просто переписываем
+                        if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное
                     }
                 }
                 massiv = temp;
@@ -73,6 +75,10 @@ namespace Graph
             string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
             using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
                 streamWriter.Write(resultString);
+
+            stopWatch.Stop();
+            Console.WriteLine(stopWatch.ElapsedMilliseconds.ToString());
+            Console.ReadKey();
         }
     }
     class Element //хранение пары значений: вероятность и длина
