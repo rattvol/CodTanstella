@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,7 +10,7 @@ namespace Graph
     {
         static void Main(string[] args)
         {
-            decimal[] arrOfElements;
+            float[] arrOfElements;
             int d, k, n;  
             Char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
             using (StreamReader streamReader = new StreamReader("Tunstall.in"))
@@ -20,32 +21,33 @@ namespace Graph
                 k = Convert.ToInt32(objOfLine[1]);//количество слов
                 n = Convert.ToInt32(objOfLine[2]);//длина слова
                  //чтение и заполнение массива вероятностей
-                arrOfElements = new decimal[k];
+                arrOfElements = new float[k];
                 line = streamReader.ReadLine();
                 objOfLine = line.Split(' ');
                 for (int i = 0; i < k; i++)//заполняем массив вероятностей
                 {
-                    arrOfElements[i] = Convert.ToDecimal(objOfLine[i].Replace('.', separator));
+                    arrOfElements[i] = float.Parse(objOfLine[i].Replace('.', separator));
                 }
             }
             //массив хранения множества вершин
-            List<Element> massiv = new List<Element>();
+            List<Element> massiv = new List<Element>(1);
             massiv.Add(new Element(1, 0));//заполняем первичным значением
             int topCounter = k;//ожидаемое количество вершин при следующем расщеплении
-            int limit = (Int32)Math.Pow(d, n);//ограничение по количеству вершин
-            decimal max = 1;//максимальное для поиска
-            decimal newmax = 0;//максимальное для заполнения
+            int limit = Convert.ToInt32(Math.Pow(d, n));//ограничение по количеству вершин
+            float max = 1;//максимальное для поиска
+            float newmax = 0;//максимальное для заполнения
+            float newProb;
             while (topCounter <= limit)
             {
-                List<Element> temp = new List<Element>();
-                foreach (Element dec in massiv)
+                List<Element> temp = new List<Element>(topCounter);
+                foreach (ref Element dec in massiv)
                 {
                     if (dec.Key == max)//расщепление для максимального значения
                     {
-                        for (int i = 0; i < arrOfElements.Length; i++)
+                        for (int i = 0; i < k; i++)
                         {
                             //заполняем временный массив результатом расщепления
-                            decimal newProb = dec.Key * arrOfElements[i];
+                            newProb = dec.Key * arrOfElements[i];
                             temp.Add(new Element(newProb, dec.Value+1));
                             if (newProb > newmax) newmax = newProb;//вычисляем максимальное
                         }
@@ -63,7 +65,7 @@ namespace Graph
                 newmax = 0;
             }
             //Расчет средней длины сообщения
-            decimal result = 0;
+            float result = 0;
             foreach (Element dec in massiv)
             {
                 result += dec.Key * dec.Value;
@@ -71,14 +73,15 @@ namespace Graph
             ////вывод в файл
             string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
             using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
-                streamWriter.Write(resultString);
+            streamWriter.Write(resultString);
+            
         }
     }
     class Element //хранение пары значений: вероятность и длина
     {
-        public decimal Key { get; set; }//вероятность
+        public float Key { get; set; }//вероятность
         public int Value { get; set; }//длина сообщения
-        public Element(decimal key, int value)
+        public Element(float key, int value)
         {
             Key = key;
             Value = value;
