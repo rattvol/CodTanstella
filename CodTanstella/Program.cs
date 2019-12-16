@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -29,20 +30,21 @@ namespace Graph
                 }
             }
             //массив хранения множества вершин
-            List<Element> massiv = new List<Element>(1);
+            int limit = Convert.ToInt32(Math.Pow(d, n));//ограничение по количеству вершин
+            List<Element> massiv = new List<Element>(limit);
             massiv.Add(new Element(1, 0));//заполняем первичным значением
             int topCounter = k;//ожидаемое количество вершин при следующем расщеплении
-            int limit = Convert.ToInt32(Math.Pow(d, n));//ограничение по количеству вершин
             decimal max = 1;//максимальное для поиска
             decimal newmax = 0;
             decimal newProb;
+
 
             while (topCounter <= limit)
             {
                 List<Element> temp = new List<Element>();
                 foreach (Element dec in massiv)
                 {
-                    if (dec.Key == max & topCounter <= limit)//расщепление для максимального значения
+                    if (dec.Key == max)//расщепление для максимального значения
                     {
                         for (int i = 0; i < k; i++)
                         {
@@ -55,28 +57,29 @@ namespace Graph
                                 dec.Value += +1;
                             }
                             if (newProb > newmax) newmax = newProb;//вычисляем максимальное
+
                         }
                         topCounter += k - 1;
+                        if (topCounter > limit) goto Exit;
                     }
                     else
                     {
                         if (dec.Key > newmax) newmax = dec.Key;//вычисляем максимальное среди неизменяемых элементов
                     }
-                }
-                foreach (Element dec in temp)
-                {
-                    massiv.Add(dec);//дополняем массив новыми элементами
-                }
-                max = newmax;
-                newmax = 0;
+                }                
+            max = newmax;
+            newmax = 0;
+            Exit:
+            massiv.AddRange(temp);//дополняем массив новыми элементами
             }
+
             //Расчет средней длины сообщения
             decimal result = 0;
             foreach (Element dec in massiv)
             {
-                result += dec.Key * dec.Value;
+                result += dec.Mult();
             }
-            ////вывод в файл
+            //вывод в файл
             string resultString = Math.Round(result, 3).ToString().Replace(separator, '.');
             using (StreamWriter streamWriter = new StreamWriter("Tunstall.out", false))
                 streamWriter.Write(resultString);
@@ -91,5 +94,10 @@ namespace Graph
             Key = key;
             Value = value;
         }
+        public decimal Mult()
+        {
+            return Key * Value;
+        }
     }
+   
 }
